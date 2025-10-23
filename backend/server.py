@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect, Header
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -57,19 +57,17 @@ class UserPublic(BaseModel):
     email: EmailStr
 
 class OutpassCreateIn(BaseModel):
-    purpose: str
+    reason: str
     dateOut: str
     returnTime: str
-    destination: str
 
 class OutpassItem(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
     userId: str
-    purpose: str
+    reason: str
     dateOut: str
     returnTime: str
-    destination: str
     status: str
     createdAt: str
     qrCodeToken: Optional[str] = None
@@ -101,7 +99,7 @@ async def get_user_from_token(token: str) -> Dict[str, Any]:
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-async def current_user(authorization: Optional[str] = None):
+async def current_user(authorization: Optional[str] = Header(default=None)):
     if not authorization:
         raise HTTPException(status_code=401, detail="Missing Authorization header")
     scheme, _, token = authorization.partition(" ")
@@ -184,10 +182,9 @@ async def create_outpass(data: OutpassCreateIn, user=Depends(current_user)):
     doc = {
         "id": oid,
         "userId": user["id"],
-        "purpose": data.purpose.strip(),
+        "reason": data.reason.strip(),
         "dateOut": data.dateOut.strip(),
         "returnTime": data.returnTime.strip(),
-        "destination": data.destination.strip(),
         "status": "PENDING",
         "qrCodeToken": None,
         "createdAt": datetime.now(timezone.utc).isoformat(),
@@ -262,6 +259,22 @@ app.add_middleware(
 # Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def seed_default_user():
+    # Seed the requested default user
+    email = "xyz@hitam.org"
+    existing = await db.users.find_one({"email": email}, {"_id": 0})
+    if not existing:
+        uid = str(uuid.uuid4())
+        await db.users.insert_one({
+            "id": uid,
+            "name": "xyz",
+            "rollNo": "24E51*****",
+            "email": email,
+            "password": await hash_password("asdfjkl;"),
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+        })
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

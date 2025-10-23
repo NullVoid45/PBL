@@ -10,7 +10,7 @@ export default function Navbar({ onLogout, isAuthed }) {
           <div className="font-semibold tracking-wide text-[#1B5E20]" data-testid="brand-title">Hyderabad Institute of Technology and Management · Online Out Pass</div>
         </div>
         {isAuthed ? (
-          <Button data-testid="logout-button" onClick={onLogout} className={cn("rounded-full bg-[#2E7D32] hover:bg-[#1B5E20] text-white")}>Logout</Button>
+          <Button data-testid="logout-button" onClick={onLogout} className={cn("rounded-full bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-4 py-2 text-sm")}>Logout</Button>
         ) : null}
       </div>
     </header>

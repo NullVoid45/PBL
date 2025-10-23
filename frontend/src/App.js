@@ -1,9 +1,7 @@
-import { useMemo } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Login from "@/pages/Login";
-import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -24,7 +22,6 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<AuthedRoute><Dashboard /></AuthedRoute>} />
         </Routes>
       </BrowserRouter>

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -40,7 +40,7 @@ export default function Login() {
             <form onSubmit={submit} className="space-y-4" data-testid="login-form">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" data-testid="login-email-input" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="you@hitam.ac.in" required />
+                <Input id="email" data-testid="login-email-input" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="xyz@hitam.org" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -53,11 +53,11 @@ export default function Login() {
                 </div>
                 <button type="button" className="text-[#2E7D32] hover:underline" data-testid="forgot-password">Forgot password?</button>
               </div>
-              <Button data-testid="login-submit-button" disabled={loading} type="submit" className="w-full rounded-full bg-[#2E7D32] hover:bg-[#1B5E20]">{loading?"Signing in...":"Sign in"}</Button>
-              <div className="text-sm text-gray-700">No account? <Link to="/register" data-testid="go-register" className="text-[#2E7D32] hover:underline">Register</Link></div>
+              <Button data-testid="login-submit-button" disabled={loading} type="submit" className="w-full rounded-full bg-[#2E7D32] hover:bg-[#1B5E20] px-6 py-3 text-base">{loading?"Signing in...":"Sign in"}</Button>
             </form>
           </CardContent>
         </Card>
+        <div className="mt-3 text-xs text-gray-600">Demo login: xyz@hitam.org / asdfjkl;</div>
       </div>
     </div>
   );

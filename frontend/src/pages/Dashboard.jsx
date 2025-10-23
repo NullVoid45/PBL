@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import api, { API_BASE } from "@/utils/api";
+import { useEffect, useRef, useState } from "react";
+import api from "@/utils/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ const wsUrlFromHttp = (httpUrl) => {
 };
 
 export default function Dashboard() {
-  const [form, setForm] = useState({ purpose:"", dateOut:"", returnTime:"", destination:"" });
+  const [form, setForm] = useState({ reason:"", dateOut:"", returnTime:"" });
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
   const token = localStorage.getItem("token");
@@ -54,7 +54,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       await api.post("/outpass/create", form);
-      setForm({ purpose:"", dateOut:"", returnTime:"", destination:"" });
+      setForm({ reason:"", dateOut:"", returnTime:"" });
       toast.success("Request submitted");
       await fetchItems();
     } catch (err) {
@@ -75,8 +75,8 @@ export default function Dashboard() {
           <CardContent>
             <form onSubmit={submit} className="space-y-4" data-testid="outpass-form">
               <div className="space-y-2">
-                <Label htmlFor="purpose">Purpose of Visit</Label>
-                <Textarea id="purpose" data-testid="purpose-input" value={form.purpose} onChange={(e)=>setForm({...form, purpose:e.target.value})} required />
+                <Label htmlFor="reason">Reason</Label>
+                <Textarea id="reason" data-testid="reason-input" value={form.reason} onChange={(e)=>setForm({...form, reason:e.target.value})} required />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -88,11 +88,7 @@ export default function Dashboard() {
                   <Input id="returnTime" data-testid="returntime-input" type="datetime-local" value={form.returnTime} onChange={(e)=>setForm({...form, returnTime:e.target.value})} required />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="destination">Destination / Reason</Label>
-                <Input id="destination" data-testid="destination-input" value={form.destination} onChange={(e)=>setForm({...form, destination:e.target.value})} required />
-              </div>
-              <Button data-testid="submit-outpass-button" disabled={loading} type="submit" className="rounded-full bg-[#2E7D32] hover:bg-[#1B5E20]">{loading?"Submitting...":"Submit Request"}</Button>
+              <Button data-testid="submit-outpass-button" disabled={loading} type="submit" className="rounded-full bg-[#2E7D32] hover:bg-[#1B5E20] px-6 py-3 text-base">{loading?"Submitting...":"Submit Request"}</Button>
             </form>
           </CardContent>
         </Card>
@@ -100,12 +96,11 @@ export default function Dashboard() {
           {items.map((it)=> (
             <Card key={it.id} className="border-[#A5D6A7]" data-testid={`request-card-${it.id}`}>
               <CardHeader className="flex-row items-center justify-between">
-                <CardTitle className="text-[#1B1B1B]">{it.purpose}</CardTitle>
+                <CardTitle className="text-[#1B1B1B]">{it.reason}</CardTitle>
                 {badge(it.status)}
               </CardHeader>
               <CardContent className="grid gap-2 text-sm">
                 <div data-testid="request-datetime">Out: <span className="font-medium">{it.dateOut}</span> · Return: <span className="font-medium">{it.returnTime}</span></div>
-                <div data-testid="request-destination">Destination: <span className="font-medium">{it.destination}</span></div>
                 {it.status === 'APPROVED' && it.qrCodeDataUrl ? (
                   <div className="mt-2">
                     <img data-testid="qr-image" src={it.qrCodeDataUrl} alt="QR Code" className="h-40 w-40 rounded-md border border-[#A5D6A7] bg-white p-2" />
